@@ -9,17 +9,19 @@ import reactor.core.publisher.Mono
 
 interface IUserService {
 
-    suspend fun createUser(user: UserCreateRequest): User?
+    suspend fun createUser(user: UserCreateRequest): Mono<User>?
 
-    suspend fun modifyUser(user: UserRequest): User?
+    suspend fun modifyUser(user: UserCreateRequest): Mono<User>?
 
-    suspend fun getUser(userId: String): User?
+    suspend fun getUser(userId: String): Mono<User>?
 
     suspend fun deleteUser(user: UserRequest): Int?
 
     suspend fun deleteUserById(userId: String): Int?
 
-    suspend fun getCredentials(userId: String): List<Credential>?
+    suspend fun getCredentials(userId: String): List<Mono<Credential>>?
 
     fun getSettings(userId: String): Setting
+
+    suspend fun getSettingPasswordDuration(userId: String): Int?
 }

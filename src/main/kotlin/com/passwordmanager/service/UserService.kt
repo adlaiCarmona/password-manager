@@ -17,11 +17,11 @@ class UserService(
     val settingService: SettingService
         ): IUserService {
 
-    override suspend fun createUser(user: UserCreateRequest): User? {
+    override suspend fun createUser(user: UserCreateRequest): Mono<User>? {
         user.password ?: throw IllegalArgumentException("Password cannot be null!")
 
         try {
-            return userRepository.save( user.convert() ).block()
+            return userRepository.save( user.convert() )
         } catch ( e: IllegalArgumentException  ){
             println("Error creating User\n User to save was null\n $e")
         } catch ( e: Exception ){
@@ -32,7 +32,7 @@ class UserService(
     }
 
     // make it patch type
-    override suspend fun modifyUser(user: UserRequest): User? {
+    override suspend fun modifyUser(user: UserCreateRequest): Mono<User>? {
         user.password ?: throw IllegalArgumentException("Password cannot be null!")
 
         try {
@@ -66,16 +66,16 @@ class UserService(
         return 1
     }
 
-    override suspend fun getUser(userId: String): User? {
+    override suspend fun getUser(userId: String): Mono<User>? {
         try {
-            return userRepository.findById(userId).block()
+            return userRepository.findById(userId)
         } catch (e: Exception){
             println("Error getting User with id: $userId \n $e")
         }
         return null
     }
 
-    override suspend fun getCredentials(userId: String): List<Credential>? {
+    override suspend fun getCredentials(userId: String): List<Mono<Credential>>? {
         try {
             return credentialService.getCredentialsByUserIdEquals(userId)
         } catch (e: Exception){
@@ -86,5 +86,14 @@ class UserService(
 
     override fun getSettings(userId: String): Setting {
         TODO("Not yet implemented")
+    }
+
+    override suspend fun getSettingPasswordDuration(userId: String): Int? {
+        try {
+            return userRepository.queryUserByIdEquals(userId)
+        } catch (e: Exception){
+            println("Error getting Setting Password Duration of User with id: $userId \n $e")
+        }
+        return null
     }
 }
