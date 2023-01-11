@@ -4,12 +4,10 @@ import com.passwordmanager.domain.Credential
 import java.time.LocalDateTime
 
 data class CredentialCreateRequest(
-    val userId: String,
+    val userId: String?,
     val username: String,
     val password: String,
-    val url: String,
-    val tags: String? = null,
-    val expirationDate: LocalDateTime?
+    val url: String
 )
 data class CredentialRequest(
     override val userId: String,
@@ -52,9 +50,7 @@ fun CredentialCreateRequest.convert(): Credential {
         this.userId!!,
         this.username!!,
         this.password!!,
-        this.url!!,
-        this.tags!!,
-        this.expirationDate!!
+        this.url!!
     )
 }
 
@@ -63,8 +59,6 @@ fun CredentialCreateRequest.addUserId(userId: String): CredentialCreateRequest {
         userId,
         this.username,
         this.password,
-        this.url,
-        this.tags,
-        this.expirationDate
+        this.url
     )
 }

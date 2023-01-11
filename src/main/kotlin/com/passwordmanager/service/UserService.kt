@@ -75,9 +75,12 @@ class UserService(
         return null
     }
 
-    override suspend fun getCredentials(userId: String): List<Mono<Credential>>? {
+    override suspend fun getCredentials(userId: String): Any? {
         try {
-            return credentialService.getCredentialsByUserIdEquals(userId)
+            println("DEBUG get Credentials v1.0: ${credentialService.getCredentialsByUserIdEquals(userId)}")
+            println("DEBUG get Credentials v2.0: ${credentialService.getCredentialsByUserIdEquals2(userId)}")
+//            println("DEBUG get Credentials v3.0: ${credentialService.getCredentialsByUserIdEquals3(userId)}")
+            return credentialService.getCredentialsByUserIdEquals3(userId)
         } catch (e: Exception){
             println("Error deleting User with id: $userId \n $e")
         }
@@ -88,9 +91,11 @@ class UserService(
         TODO("Not yet implemented")
     }
 
-    override suspend fun getSettingPasswordDuration(userId: String): Int? {
+    override suspend fun getSettingPasswordDuration(userId: String): Any? {
         try {
-            return userRepository.queryUserByIdEquals(userId)
+            println("DEBUG get Password Duration: ${userRepository.queryUserByIdEquals(userId)}")
+//            return userRepository.queryUserByIdEquals(userId)
+            return userRepository.findById(userId).block()?.passwordDuration
         } catch (e: Exception){
             println("Error getting Setting Password Duration of User with id: $userId \n $e")
         }

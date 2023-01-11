@@ -19,9 +19,9 @@ interface IUserService {
 
     suspend fun deleteUserById(userId: String): Int?
 
-    suspend fun getCredentials(userId: String): List<Mono<Credential>>?
+    suspend fun getCredentials(userId: String): Any?
 
     fun getSettings(userId: String): Setting
 
-    suspend fun getSettingPasswordDuration(userId: String): Int?
+    suspend fun getSettingPasswordDuration(userId: String): Any?
 }

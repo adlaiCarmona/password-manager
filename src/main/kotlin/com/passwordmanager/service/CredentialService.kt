@@ -46,7 +46,7 @@ class CredentialService(val credentialRepository: ICredentialRepository): ICrede
         return null
     }
 
-    override suspend fun getCredentialsByUserIdEquals(userId: String): List<Mono<Credential>>? {
+    override suspend fun getCredentialsByUserIdEquals(userId: String): Any? {
         try {
             return credentialRepository.getCredentialsByUserIdEquals(userId)
         } catch (e: Exception){
@@ -55,5 +55,22 @@ class CredentialService(val credentialRepository: ICredentialRepository): ICrede
         return null
     }
 
+    suspend fun getCredentialsByUserIdEquals2(userId: String): Any? {
+        try {
+            return credentialRepository.findByUserId(userId)
+        } catch (e: Exception){
+            println("Error getting Credentials of User with id:$userId\n $e")
+        }
+        return null
+    }
+
+    suspend fun getCredentialsByUserIdEquals3(userId: String): Any? {
+        try {
+            return credentialRepository.queryCredentialByUserId(userId)
+        } catch (e: Exception){
+            println("Error getting Credentials of User with id:$userId\n $e")
+        }
+        return null
+    }
 
 }
