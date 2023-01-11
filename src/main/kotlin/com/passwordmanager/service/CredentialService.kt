@@ -1,5 +1,6 @@
 package com.passwordmanager.service
 
+import com.passwordmanager.common.CredentialCreateRequest
 import com.passwordmanager.common.CredentialRequest
 import com.passwordmanager.common.convert
 import com.passwordmanager.domain.Credential
@@ -10,27 +11,25 @@ import reactor.core.publisher.Mono
 
 @Service
 class CredentialService(val credentialRepository: ICredentialRepository): ICredentialService {
-    override suspend fun createCredential(credential: CredentialRequest): Mono<Credential>? {
+    override suspend fun createCredential(credential: CredentialCreateRequest): Credential? {
         try {
-            return credentialRepository.save( credential.convert() )
+            return credentialRepository.save( credential.convert() ).block()
         } catch ( e: IllegalArgumentException  ){
             println("Error creating Credential\n Setting to save was null\n $e")
         } catch ( e: Exception ){
             println("Error creating Credential\n $e")
         }
-
         return null
     }
 
-    override suspend fun modifyCredential(credential: CredentialRequest): Mono<Credential>? {
+    override suspend fun modifyCredential(credential: CredentialRequest): Credential? {
         try {
-            return credentialRepository.save( credential.convert() )
+            return credentialRepository.save( credential.convert() ).block()
         } catch ( e: IllegalArgumentException  ){
             println("Error creating Credential\n Setting to modify was null\n $e")
         } catch ( e: Exception ){
             println("Error creating Credential\n $e")
         }
-
         return null
     }
 
@@ -47,7 +46,7 @@ class CredentialService(val credentialRepository: ICredentialRepository): ICrede
         return null
     }
 
-    override suspend fun getCredentialsByUserIdEquals(userId: String): List<Credential>? {
+    override suspend fun getCredentialsByUserIdEquals(userId: String): Any? {
         try {
             return credentialRepository.getCredentialsByUserIdEquals(userId)
         } catch (e: Exception){
@@ -56,5 +55,22 @@ class CredentialService(val credentialRepository: ICredentialRepository): ICrede
         return null
     }
 
+    suspend fun getCredentialsByUserIdEquals2(userId: String): Any? {
+        try {
+            return credentialRepository.findByUserId(userId)
+        } catch (e: Exception){
+            println("Error getting Credentials of User with id:$userId\n $e")
+        }
+        return null
+    }
+
+    suspend fun getCredentialsByUserIdEquals3(userId: String): Any? {
+        try {
+            return credentialRepository.queryCredentialByUserId(userId)
+        } catch (e: Exception){
+            println("Error getting Credentials of User with id:$userId\n $e")
+        }
+        return null
+    }
 
 }

@@ -17,11 +17,11 @@ class UserService(
     val settingService: SettingService
         ): IUserService {
 
-    override suspend fun createUser(user: UserCreateRequest): User? {
+    override suspend fun createUser(user: UserCreateRequest): Mono<User>? {
         user.password ?: throw IllegalArgumentException("Password cannot be null!")
 
         try {
-            return userRepository.save( user.convert() ).block()
+            return userRepository.save( user.convert() )
         } catch ( e: IllegalArgumentException  ){
             println("Error creating User\n User to save was null\n $e")
         } catch ( e: Exception ){
@@ -32,7 +32,7 @@ class UserService(
     }
 
     // make it patch type
-    override suspend fun modifyUser(user: UserRequest): User? {
+    override suspend fun modifyUser(user: UserCreateRequest): Mono<User>? {
         user.password ?: throw IllegalArgumentException("Password cannot be null!")
 
         try {
@@ -66,18 +66,21 @@ class UserService(
         return 1
     }
 
-    override suspend fun getUser(userId: String): User? {
+    override suspend fun getUser(userId: String): Mono<User>? {
         try {
-            return userRepository.findById(userId).block()
+            return userRepository.findById(userId)
         } catch (e: Exception){
             println("Error getting User with id: $userId \n $e")
         }
         return null
     }
 
-    override suspend fun getCredentials(userId: String): List<Credential>? {
+    override suspend fun getCredentials(userId: String): Any? {
         try {
-            return credentialService.getCredentialsByUserIdEquals(userId)
+            println("DEBUG get Credentials v1.0: ${credentialService.getCredentialsByUserIdEquals(userId)}")
+            println("DEBUG get Credentials v2.0: ${credentialService.getCredentialsByUserIdEquals2(userId)}")
+//            println("DEBUG get Credentials v3.0: ${credentialService.getCredentialsByUserIdEquals3(userId)}")
+            return credentialService.getCredentialsByUserIdEquals3(userId)
         } catch (e: Exception){
             println("Error deleting User with id: $userId \n $e")
         }
@@ -86,5 +89,16 @@ class UserService(
 
     override fun getSettings(userId: String): Setting {
         TODO("Not yet implemented")
+    }
+
+    override suspend fun getSettingPasswordDuration(userId: String): Any? {
+        try {
+            println("DEBUG get Password Duration: ${userRepository.queryUserByIdEquals(userId)}")
+//            return userRepository.queryUserByIdEquals(userId)
+            return userRepository.findById(userId).block()?.passwordDuration
+        } catch (e: Exception){
+            println("Error getting Setting Password Duration of User with id: $userId \n $e")
+        }
+        return null
     }
 }

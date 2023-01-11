@@ -9,14 +9,18 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping(value = ["/users"])
 class UsersController(private val userService: IUserService) {
 
-    @GetMapping(value = ["{userId}"])
+    @GetMapping("{userId}")
     suspend fun getUserById(@PathVariable userId: String) = userService.getUser(userId)
 
-    @PostMapping(value = ["/"])
+    @PostMapping("/")
     suspend fun createUser(@RequestBody user: UserCreateRequest) = userService.createUser(user)
 
-    @PatchMapping(value = ["{userId}"])
-    suspend fun patchUserById(@RequestBody user: UserRequest){
-        userService.modifyUser(user)
-    }
+    @PatchMapping("{userId}")
+    suspend fun patchUserById(@RequestBody user: UserCreateRequest) = userService.modifyUser(user)
+
+    @GetMapping("{userId}/setting/password-duration")
+    suspend fun getPasswordDuration(@PathVariable userId:String) = userService.getSettingPasswordDuration(userId)
+
+    @GetMapping("/credentials/{userId}")
+    suspend fun getCredentialsOfUser(@PathVariable userId: String) = userService.getCredentials(userId)
 }

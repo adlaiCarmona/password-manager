@@ -1,14 +1,20 @@
 package com.passwordmanager.common
 
 import com.passwordmanager.domain.Credential
-import java.sql.Timestamp
+import java.time.LocalDateTime
 
+data class CredentialCreateRequest(
+    val userId: String?,
+    val username: String,
+    val password: String,
+    val url: String
+)
 data class CredentialRequest(
     override val userId: String,
     override val username: String,
     override val password: String,
     override val url: String,
-    override val expirationDate: Timestamp?,
+    override val expirationDate: LocalDateTime?,
     override val id: String? = null,
     override val tags: String? = null,
     override val isDeleted: Boolean? = false,
@@ -21,7 +27,7 @@ interface ICredentialRequest{
     val password: String?
     val url: String?
     val tags: String?
-    val expirationDate: Timestamp?
+    val expirationDate: LocalDateTime?
     val isDeleted: Boolean?
 }
 
@@ -35,5 +41,24 @@ fun ICredentialRequest.convert(): Credential {
         this.tags!!,
         this.expirationDate!!,
         this.isDeleted!!
+    )
+}
+
+fun CredentialCreateRequest.convert(): Credential {
+    return Credential(
+        null,
+        this.userId!!,
+        this.username!!,
+        this.password!!,
+        this.url!!
+    )
+}
+
+fun CredentialCreateRequest.addUserId(userId: String): CredentialCreateRequest {
+    return CredentialCreateRequest(
+        userId,
+        this.username,
+        this.password,
+        this.url
     )
 }
