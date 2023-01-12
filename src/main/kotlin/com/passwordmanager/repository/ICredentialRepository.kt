@@ -10,6 +10,9 @@ import reactor.core.publisher.Mono
 @Repository
 interface ICredentialRepository: ReactiveCrudRepository<Credential, String> {
 
+    @Query("select * from Credentials")
+    fun getCredentials()
+
     @Query("select * from Credentials where user_id = :userId")
     fun getCredentialsByUserIdEquals(@Param("userId") id: String)
 
