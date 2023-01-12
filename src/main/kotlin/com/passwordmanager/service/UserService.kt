@@ -18,7 +18,6 @@ class UserService(
         ): IUserService {
 
     override suspend fun createUser(user: UserCreateRequest): Mono<User>? {
-        user.password ?: throw IllegalArgumentException("Password cannot be null!")
 
         try {
             return userRepository.save( user.convert() )
@@ -33,10 +32,9 @@ class UserService(
 
     // make it patch type
     override suspend fun modifyUser(user: UserCreateRequest): Mono<User>? {
-        user.password ?: throw IllegalArgumentException("Password cannot be null!")
 
         try {
-            return null//userRepository.save( user.convert() )
+            return userRepository.save( user.convert() )
         } catch ( e: IllegalArgumentException  ){
             println("Error modifying User\n User to save was null\n $e")
         } catch ( e: Exception ){

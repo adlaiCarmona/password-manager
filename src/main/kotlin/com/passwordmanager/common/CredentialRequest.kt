@@ -16,7 +16,7 @@ data class CredentialRequest(
     override val url: String,
     override val expirationDate: LocalDateTime?,
     override val id: String? = null,
-    override val tags: String? = null,
+    override val tags: String? = "",
     override val isDeleted: Boolean? = false,
 ) : ICredentialRequest
 
