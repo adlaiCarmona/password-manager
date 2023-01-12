@@ -5,7 +5,6 @@ import com.passwordmanager.domain.Credential
 import com.passwordmanager.domain.Setting
 import com.passwordmanager.domain.User
 import com.passwordmanager.repository.IUserRepository
-import com.passwordmanager.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono

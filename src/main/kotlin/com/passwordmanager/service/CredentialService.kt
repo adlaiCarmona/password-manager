@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
 @Service
-class CredentialService(): ICredentialService {
+class CredentialService/*(val credentialRepository: ICredentialRepository)*/: ICredentialService {
 
     @Autowired
     lateinit var credentialRepository: ICredentialRepository

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.anyString
+import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
@@ -25,9 +26,7 @@ class UserServiceTest {
     @Mock
     lateinit var credentialService: CredentialService
 
-    @Mock
-    lateinit var settingService: SettingService
-
+    @InjectMocks
     lateinit var userService: UserService
 
     private val userId = "12345-678-90"
@@ -37,18 +36,17 @@ class UserServiceTest {
     @BeforeEach
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        userService = UserService(userRepository, credentialService, settingService)
     }
 
     @Test
     fun testCreateUser() {
         runBlocking {
             `when`(userRepository.save(any())).then { Mono.just(usercreateRequest.convert()) }
-            val postUserResponse = userService.createUser(usercreateRequest)!!.block()
+            val response = userService.createUser(usercreateRequest)!!.block()
 
-            println("Test Create User:\n response = $postUserResponse")
+            println("Test Create User:\n response = $response")
 
-            assert(postUserResponse != null)
+            assert(response != null)
         }
     }
 
@@ -92,11 +90,11 @@ class UserServiceTest {
     fun testGetUser() {
         runBlocking {
             `when`(userRepository.findById(anyString())).then { Mono.just(usercreateRequest.convert()) }
-            val getUserResponse = userService.getUser(userId)
+            val response = userService.getUser(userId)
 
-            println("Test Get User:\n getUserResponse = $getUserResponse")
+            println("Test Get User:\n getUserResponse = $response")
 
-            assert(getUserResponse != null)
+            assert(response != null)
         }
     }
 
@@ -106,18 +104,19 @@ class UserServiceTest {
             `when`(credentialService.getCredentialsByUserIdEquals(anyString())).then { Mono.just(arrayListOf("credential")) }
             `when`(credentialService.getCredentialsByUserIdEquals2(anyString())).then { Mono.just(arrayListOf("credential")) }
             `when`(credentialService.getCredentialsByUserIdEquals3(anyString())).then { Mono.just(arrayListOf("credential")) }
-            val getUserResponse = userService.getCredentials(userId)
+            val response = userService.getCredentials(userId)
 
-            println("Test Get User:\n getUserResponse = $getUserResponse")
+            println("Test Get User:\n getUserResponse = $response")
 
-            assert(getUserResponse != null)
+            assert(response != null)
         }
     }
 
     @Test
     fun testGetUserPasswordDuration() {
         runBlocking {
-            `when`(userRepository.queryUserByIdEquals(anyString())).then {  }
+            `when`(userRepository.queryUserByIdEquals(anyString())).then { 0 }
+            `when`(userRepository.findById(anyString())).then { Mono.just(usercreateRequest.convert()) }
             val response = userService.getSettingPasswordDuration(userId)
 
             println("Test Get User Password Duration:\n response = $response")

@@ -5,19 +5,28 @@ import com.passwordmanager.common.CredentialRequest
 import com.passwordmanager.common.convert
 import com.passwordmanager.repository.ICredentialRepository
 import com.passwordmanager.service.CredentialService
+import com.passwordmanager.service.ICredentialService
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers.anyString
+import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
+import org.mockito.junit.jupiter.MockitoExtension
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import reactor.core.publisher.Mono
 import java.time.LocalDateTime
 
+//@SpringJUnitConfig
 class CredentialServiceTest {
     @Mock
     lateinit var credentialRepository: ICredentialRepository
 
+    @InjectMocks
     private lateinit var credentialService: CredentialService
 
     private val credentialCreateRequest = CredentialCreateRequest("12345-678-90", "Test", "pass123", "www.test.com")
@@ -27,7 +36,6 @@ class CredentialServiceTest {
     @BeforeEach
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        credentialService = CredentialService(credentialRepository)
     }
 
     @Test
