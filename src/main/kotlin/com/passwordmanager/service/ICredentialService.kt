@@ -16,4 +16,6 @@ interface ICredentialService {
     suspend fun deleteCredential(credential: CredentialRequest): Int?
 
     suspend fun getCredentialsByUserIdEquals(userId: String): Any?
+
+    suspend fun getCredentials(): Any?
 }

@@ -3,11 +3,18 @@ package com.passwordmanager.controllers
 import com.passwordmanager.common.CredentialCreateRequest
 import com.passwordmanager.common.addUserId
 import com.passwordmanager.service.ICredentialService
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping(value = ["/credentials"])
-class CredentialController(private val credentialService: ICredentialService) {
+class CredentialController() {
+
+    @Autowired
+    lateinit var credentialService: ICredentialService
+
+    @GetMapping("")
+    suspend fun getCredentials() = credentialService.getCredentials()
 
     @GetMapping("{userId}")
     suspend fun getCredentialsOfUser(@PathVariable userId: String) = credentialService.getCredentialsByUserIdEquals(userId)

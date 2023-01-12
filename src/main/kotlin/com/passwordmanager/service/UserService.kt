@@ -6,16 +6,20 @@ import com.passwordmanager.domain.Setting
 import com.passwordmanager.domain.User
 import com.passwordmanager.repository.IUserRepository
 import com.passwordmanager.repository.UserRepository
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import java.sql.Timestamp
 
 @Service
-class UserService(
-    val userRepository: IUserRepository,
-    val credentialService: CredentialService,
-    val settingService: SettingService
-        ): IUserService {
+class UserService(): IUserService {
+
+    @Autowired
+    lateinit var userRepository: IUserRepository
+    @Autowired
+    lateinit var credentialService: CredentialService
+    @Autowired
+    lateinit var settingService: SettingService
 
     override suspend fun createUser(user: UserCreateRequest): Mono<User>? {
 

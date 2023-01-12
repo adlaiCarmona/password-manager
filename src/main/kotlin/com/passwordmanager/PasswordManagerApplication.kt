@@ -20,16 +20,3 @@ class PasswordManagerApplication
 fun main(args: Array<String>) {
     runApplication<PasswordManagerApplication>(*args)
 }
-
-//@Configuration
-//class Config {
-//    @Bean
-//    fun initializer(connectionFactory: ConnectionFactory): ConnectionFactoryInitializer {
-//        val initializer = ConnectionFactoryInitializer()
-//        initializer.setConnectionFactory(connectionFactory)
-//        val populator = CompositeDatabasePopulator()
-//        populator.addPopulators(ResourceDatabasePopulator(ClassPathResource("./sql/schema.sql")))
-//        initializer.setDatabasePopulator(populator)
-//        return initializer
-//    }
-//}

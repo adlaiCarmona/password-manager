@@ -7,11 +7,16 @@ import com.passwordmanager.domain.Credential
 import com.passwordmanager.repository.ICredentialRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
 @Service
-class CredentialService(val credentialRepository: ICredentialRepository): ICredentialService {
+class CredentialService(): ICredentialService {
+
+    @Autowired
+    lateinit var credentialRepository: ICredentialRepository
+
     override suspend fun createCredential(credential: CredentialCreateRequest): Mono<Credential>? {
         try {
             return credentialRepository.save( credential.convert() )
@@ -47,6 +52,15 @@ class CredentialService(val credentialRepository: ICredentialRepository): ICrede
             println("Error deleting Credential\n $e")
         }
 
+        return null
+    }
+
+    override suspend fun getCredentials(): Any? {
+        try {
+            return credentialRepository.getCredentials()
+        } catch (e: Exception){
+            println("Error getting Credentials\n $e")
+        }
         return null
     }
 

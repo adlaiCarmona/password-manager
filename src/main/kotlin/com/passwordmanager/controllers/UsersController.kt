@@ -3,11 +3,15 @@ package com.passwordmanager.controllers
 import com.passwordmanager.common.UserCreateRequest
 import com.passwordmanager.common.UserRequest
 import com.passwordmanager.service.IUserService
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping(value = ["/users"])
-class UsersController(private val userService: IUserService) {
+class UsersController() {
+
+    @Autowired
+    lateinit var userService: IUserService
 
     @GetMapping("{userId}")
     suspend fun getUserById(@PathVariable userId: String) = userService.getUser(userId)
