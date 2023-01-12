@@ -9,9 +9,9 @@ import reactor.core.publisher.Mono
 @Service
 interface ICredentialService {
 
-    suspend fun createCredential(credential: CredentialCreateRequest): Credential?
+    suspend fun createCredential(credential: CredentialCreateRequest): Mono<Credential>?
 
-    suspend fun modifyCredential(credential: CredentialRequest): Credential?
+    suspend fun modifyCredential(credential: CredentialRequest): Mono<Credential>?
 
     suspend fun deleteCredential(credential: CredentialRequest): Int?
 

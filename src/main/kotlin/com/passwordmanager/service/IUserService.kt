@@ -5,8 +5,10 @@ import com.passwordmanager.common.UserRequest
 import com.passwordmanager.domain.Credential
 import com.passwordmanager.domain.Setting
 import com.passwordmanager.domain.User
+import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 
+@Repository
 interface IUserService {
 
     suspend fun createUser(user: UserCreateRequest): Mono<User>?
