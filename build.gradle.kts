@@ -27,6 +27,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactive")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
+    implementation("org.springdoc:springdoc-openapi-data-rest:1.6.14")
+    implementation("org.springdoc:springdoc-openapi-ui:1.6.14")
+    implementation("org.springdoc:springdoc-openapi-kotlin:1.6.14")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
 
     runtimeOnly("com.h2database:h2")
