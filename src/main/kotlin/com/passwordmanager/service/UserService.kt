@@ -5,6 +5,7 @@ import com.passwordmanager.domain.Credential
 import com.passwordmanager.domain.Setting
 import com.passwordmanager.domain.User
 import com.passwordmanager.repository.IUserRepository
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
@@ -20,14 +21,16 @@ class UserService(): IUserService {
     @Autowired
     lateinit var settingService: SettingService
 
+    private val logger = KotlinLogging.logger {  }
+
     override suspend fun createUser(user: UserCreateRequest): Mono<User>? {
 
         try {
             return userRepository.save( user.convert() )
         } catch ( e: IllegalArgumentException  ){
-            println("Error creating User\n User to save was null\n $e")
+            logger.error{ "Error creating User\n User to save was null\n $e" }
         } catch ( e: Exception ){
-            println("Error creating User\n $e\n userRequest: $user")
+            logger.error{ "Error creating User\n $e\n userRequest: $user" }
         }
 
         return null
@@ -39,9 +42,9 @@ class UserService(): IUserService {
         try {
             return userRepository.save( user.convert() )
         } catch ( e: IllegalArgumentException  ){
-            println("Error modifying User\n User to save was null\n $e")
+            logger.error{ "Error modifying User\n User to save was null\n $e" }
         } catch ( e: Exception ){
-            println("Error modifying User\n $e")
+            logger.error{ "Error modifying User\n $e" }
         }
 
         return null
@@ -52,7 +55,7 @@ class UserService(): IUserService {
             userRepository.delete( user.convert() )
             return 0
         } catch (e: Exception){
-            println("Error deleting User: \n$user \n $e")
+            logger.error{ "Error deleting User: \n$user \n $e" }
         }
         return 1
     }
@@ -62,7 +65,7 @@ class UserService(): IUserService {
             userRepository.deleteById( userId )
             return 0
         } catch (e: Exception){
-            println("Error deleting User with id: $userId \n $e")
+            logger.error { "Error deleting User with id: $userId \n $e" }
         }
         return 1
     }
@@ -71,7 +74,7 @@ class UserService(): IUserService {
         try {
             return userRepository.findById(userId)
         } catch (e: Exception){
-            println("Error getting User with id: $userId \n $e")
+            logger.error { "Error getting User with id: $userId \n $e" }
         }
         return null
     }
@@ -83,7 +86,7 @@ class UserService(): IUserService {
 //            println("DEBUG get Credentials v3.0: ${credentialService.getCredentialsByUserIdEquals3(userId)}")
             return credentialService.getCredentialsByUserIdEquals3(userId)
         } catch (e: Exception){
-            println("Error deleting User with id: $userId \n $e")
+            logger.error { "Error deleting User with id: $userId \n $e" }
         }
         return null
     }
@@ -98,7 +101,7 @@ class UserService(): IUserService {
 //            return userRepository.queryUserByIdEquals(userId)
             return userRepository.findById(userId).block()?.passwordDuration
         } catch (e: Exception){
-            println("Error getting Setting Password Duration of User with id: $userId \n $e")
+            logger.error { "Error getting Setting Password Duration of User with id: $userId \n $e" }
         }
         return null
     }

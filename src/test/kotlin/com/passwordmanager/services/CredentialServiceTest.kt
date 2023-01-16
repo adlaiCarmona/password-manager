@@ -5,7 +5,6 @@ import com.passwordmanager.common.CredentialRequest
 import com.passwordmanager.common.convert
 import com.passwordmanager.repository.ICredentialRepository
 import com.passwordmanager.service.CredentialService
-import com.passwordmanager.service.ICredentialService
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -17,11 +16,11 @@ import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 import org.mockito.junit.jupiter.MockitoExtension
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import reactor.core.publisher.Mono
 import java.time.LocalDateTime
 
-//@SpringJUnitConfig
+// @ExtendWith Spring or Mockito?
+@ExtendWith(MockitoExtension::class) // by having this you dont need the MockitoAnnotations.openMocks(this)
 class CredentialServiceTest {
     @Mock
     lateinit var credentialRepository: ICredentialRepository
@@ -33,10 +32,10 @@ class CredentialServiceTest {
     private val credentialUpdateRequest = CredentialRequest("12345-678-90", "Test", "word456", "www.test2.com", LocalDateTime.now(),"0987")
 
 
-    @BeforeEach
-    fun setup() {
-        MockitoAnnotations.openMocks(this)
-    }
+//    @BeforeEach
+//    fun setup() {
+//        MockitoAnnotations.openMocks(this)
+//    }
 
     @Test
     fun testCreateCredential(){
