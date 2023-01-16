@@ -7,6 +7,7 @@ import com.passwordmanager.domain.Credential
 import com.passwordmanager.repository.ICredentialRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
@@ -17,13 +18,15 @@ class CredentialService/*(val credentialRepository: ICredentialRepository)*/: IC
     @Autowired
     lateinit var credentialRepository: ICredentialRepository
 
+    private val logger = KotlinLogging.logger {  }
+
     override suspend fun createCredential(credential: CredentialCreateRequest): Mono<Credential>? {
         try {
             return credentialRepository.save( credential.convert() )
         } catch ( e: IllegalArgumentException  ){
-            println("Error creating Credential\n Setting to save was null\n $e")
+            logger.error { "Error creating Credential\n Setting to save was null\n $e" }
         } catch ( e: Exception ){
-            println("Error creating Credential\n $e")
+            logger.error { "Error creating Credential\n $e" }
         }
         return null
     }
@@ -32,9 +35,9 @@ class CredentialService/*(val credentialRepository: ICredentialRepository)*/: IC
         try {
             return credentialRepository.save( credential.convert() )
         } catch ( e: IllegalArgumentException  ){
-            println("Error creating Credential\n Setting to modify was null\n $e")
+            logger.error { "Error creating Credential\n Setting to modify was null\n $e" }
         } catch ( e: Exception ){
-            println("Error creating Credential\n $e")
+            logger.error { "Error creating Credential\n $e" }
         }
         return null
     }
@@ -47,9 +50,9 @@ class CredentialService/*(val credentialRepository: ICredentialRepository)*/: IC
 //            println("Debug deleteCredential response:\n $response")
             return 0
         } catch ( e: IllegalArgumentException  ){
-            println("Error deleting Credential\n Setting id was null\n $e")
+            logger.error { "Error deleting Credential\n Setting id was null\n $e" }
         } catch ( e: Exception ){
-            println("Error deleting Credential\n $e")
+            logger.error { "Error deleting Credential\n $e" }
         }
 
         return null
@@ -59,7 +62,7 @@ class CredentialService/*(val credentialRepository: ICredentialRepository)*/: IC
         try {
             return credentialRepository.getCredentials()
         } catch (e: Exception){
-            println("Error getting Credentials\n $e")
+            logger.error { "Error getting Credentials\n $e" }
         }
         return null
     }
@@ -68,7 +71,7 @@ class CredentialService/*(val credentialRepository: ICredentialRepository)*/: IC
         try {
             return credentialRepository.getCredentialsByUserIdEquals(userId)
         } catch (e: Exception){
-            println("Error getting Credentials of User with id:$userId\n $e")
+            logger.error { "Error getting Credentials of User with id:$userId\n $e" }
         }
         return null
     }
@@ -77,7 +80,7 @@ class CredentialService/*(val credentialRepository: ICredentialRepository)*/: IC
         try {
             return credentialRepository.findByUserId(userId)
         } catch (e: Exception){
-            println("Error getting Credentials of User with id:$userId\n $e")
+            logger.error { "Error getting Credentials of User with id:$userId\n $e" }
         }
         return null
     }
@@ -86,7 +89,7 @@ class CredentialService/*(val credentialRepository: ICredentialRepository)*/: IC
         try {
             return credentialRepository.queryCredentialByUserId(userId)
         } catch (e: Exception){
-            println("Error getting Credentials of User with id:$userId\n $e")
+            logger.error { "Error getting Credentials of User with id:$userId\n $e" }
         }
         return null
     }
