@@ -39,6 +39,18 @@ class MultiHttpSecurityConfig {
 
     @Order(2)
     @Bean
+    fun swaggerFilterChain(http: HttpSecurity): SecurityFilterChain {
+        //TODO add authentication to swagger?
+        http
+            .csrf().disable()
+            .antMatcher("/swagger-ui/**")
+            .authorizeRequests { authorize -> authorize.anyRequest().permitAll() }
+
+        return http.build()
+    }
+
+    @Order(3)
+    @Bean
     fun publicFilterChain(http: HttpSecurity): SecurityFilterChain {
         http.antMatcher("/").authorizeRequests { authorize -> authorize.anyRequest().permitAll() }
             .httpBasic()
