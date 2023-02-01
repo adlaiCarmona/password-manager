@@ -13,9 +13,11 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.InjectMocks
 import org.mockito.Mock
+import org.mockito.Mockito
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 import org.mockito.junit.jupiter.MockitoExtension
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.time.LocalDateTime
 
@@ -50,6 +52,18 @@ class CredentialServiceTest {
     }
 
     @Test
+    fun testCreateCredentialInvalid(){
+        runBlocking {
+            Mockito.doThrow(IllegalArgumentException()).`when`(credentialRepository).save(any())
+            val response = credentialService.createCredential(credentialCreateRequest)
+
+            println("Test Create Credential:\n response = $response")
+
+            assert(response == null)
+        }
+    }
+
+    @Test
     fun testUpdateCredential(){
         runBlocking {
             `when`(credentialRepository.save(any())).then { Mono.just(credentialCreateRequest.convert()) }
@@ -58,6 +72,18 @@ class CredentialServiceTest {
             println("Test Update Credential:\n response = $response")
 
             assert(response != null)
+        }
+    }
+
+    @Test
+    fun testUpdateCredentialInvalid(){
+        runBlocking {
+            Mockito.doThrow(IllegalArgumentException()).`when`(credentialRepository).save(any())
+            val response = credentialService.modifyCredential(credentialUpdateRequest)
+
+            println("Test Update Credential:\n response = $response")
+
+            assert(response == null)
         }
     }
 
@@ -74,11 +100,24 @@ class CredentialServiceTest {
     }
 
     @Test
+    fun testDeleteCredentialInvalid(){
+        runBlocking {
+            Mockito.doThrow(IllegalArgumentException()).`when`(credentialRepository).delete(any())
+            val response = credentialService.deleteCredential(credentialUpdateRequest)
+
+            println("Test Update Credential:\n response = $response")
+
+            assert(response == null)
+        }
+    }
+
+
+    @Test
     fun testGetCredentialsOfUser(){
         runBlocking {
             val userId = "12345-678-90"
             `when`(credentialRepository.save(any())).then { Mono.just(credentialCreateRequest.convert()) }
-            `when`(credentialRepository.getCredentialsByUserIdEquals(anyString())).then {  }
+            `when`(credentialRepository.findByUserId(anyString())).then {  }
 
             credentialService.createCredential(credentialCreateRequest)
             credentialService.createCredential(credentialCreateRequest)
@@ -89,6 +128,24 @@ class CredentialServiceTest {
             println("Test Get Credentials of User:\n response = $response")
 
             assert(response != null)
+        }
+    }
+    @Test
+    fun testGetCredentialsOfUserInvalid(){
+        runBlocking {
+            val userId = "12345-678-90"
+            `when`(credentialRepository.save(any())).then { Mono.just(credentialCreateRequest.convert()) }
+            Mockito.doThrow(IllegalArgumentException()).`when`(credentialRepository).findByUserId(anyString())
+
+            credentialService.createCredential(credentialCreateRequest)
+            credentialService.createCredential(credentialCreateRequest)
+            credentialService.createCredential(credentialCreateRequest)
+
+            val response = credentialService.getCredentialsByUserIdEquals("invalid")
+
+            println("Test Get Credentials of User:\n response = $response")
+
+            assert(response == null)
         }
     }
 }

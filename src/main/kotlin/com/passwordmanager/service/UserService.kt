@@ -9,7 +9,7 @@ import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
-import java.sql.Timestamp
+import reactor.core.publisher.Flux
 
 @Service
 class UserService(): IUserService {
@@ -54,7 +54,7 @@ class UserService(): IUserService {
         try {
             userRepository.delete( user.convert() )
             return 0
-        } catch (e: Exception){
+        } catch (e: IllegalArgumentException){
             logger.error{ "Error deleting User: \n$user \n $e" }
         }
         return 1
@@ -64,7 +64,7 @@ class UserService(): IUserService {
         try {
             userRepository.deleteById( userId )
             return 0
-        } catch (e: Exception){
+        } catch (e: IllegalArgumentException){
             logger.error { "Error deleting User with id: $userId \n $e" }
         }
         return 1
@@ -73,7 +73,7 @@ class UserService(): IUserService {
     override suspend fun getUser(userId: String): Mono<User>? {
         try {
             return userRepository.findById(userId)
-        } catch (e: Exception){
+        } catch (e: IllegalArgumentException){
             logger.error { "Error getting User with id: $userId \n $e" }
         }
         return null
@@ -81,11 +81,9 @@ class UserService(): IUserService {
 
     override suspend fun getCredentials(userId: String): Any? {
         try {
-            println("DEBUG get Credentials v1.0: ${credentialService.getCredentialsByUserIdEquals(userId)}")
-            println("DEBUG get Credentials v2.0: ${credentialService.getCredentialsByUserIdEquals2(userId)}")
-//            println("DEBUG get Credentials v3.0: ${credentialService.getCredentialsByUserIdEquals3(userId)}")
-            return credentialService.getCredentialsByUserIdEquals3(userId)
-        } catch (e: Exception){
+            return credentialService.getCredentialsByUserIdEquals(userId)
+        } catch (e: IllegalArgumentException){
+            println(" Error Getting Credential of user by id: \n $e")
             logger.error { "Error deleting User with id: $userId \n $e" }
         }
         return null
@@ -100,7 +98,7 @@ class UserService(): IUserService {
             println("DEBUG get Password Duration: ${userRepository.queryUserByIdEquals(userId)}")
 //            return userRepository.queryUserByIdEquals(userId)
             return userRepository.findById(userId).block()?.passwordDuration
-        } catch (e: Exception){
+        } catch (e: IllegalArgumentException){
             logger.error { "Error getting Setting Password Duration of User with id: $userId \n $e" }
         }
         return null
