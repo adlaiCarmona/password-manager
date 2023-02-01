@@ -10,6 +10,7 @@ import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @Service
@@ -58,10 +59,10 @@ class CredentialService/*(val credentialRepository: ICredentialRepository)*/: IC
         return null
     }
 
-    override suspend fun getCredentials(): Any? {
+    override suspend fun getCredentials(): Flux<Credential>? {
         try {
-            return credentialRepository.getCredentials()
-        } catch (e: Exception){
+            return credentialRepository.findAll()
+        } catch (e: IllegalArgumentException){
             logger.error { "Error getting Credentials\n $e" }
         }
         return null
@@ -69,29 +70,13 @@ class CredentialService/*(val credentialRepository: ICredentialRepository)*/: IC
 
     override suspend fun getCredentialsByUserIdEquals(userId: String): Any? {
         try {
-            return credentialRepository.getCredentialsByUserIdEquals(userId)
-        } catch (e: Exception){
-            logger.error { "Error getting Credentials of User with id:$userId\n $e" }
-        }
-        return null
-    }
-
-    suspend fun getCredentialsByUserIdEquals2(userId: String): Any? {
-        try {
             return credentialRepository.findByUserId(userId)
-        } catch (e: Exception){
+        } catch (e: IllegalArgumentException){
+            println("Entered in Exception")
             logger.error { "Error getting Credentials of User with id:$userId\n $e" }
         }
         return null
     }
 
-    suspend fun getCredentialsByUserIdEquals3(userId: String): Any? {
-        try {
-            return credentialRepository.queryCredentialByUserId(userId)
-        } catch (e: Exception){
-            logger.error { "Error getting Credentials of User with id:$userId\n $e" }
-        }
-        return null
-    }
 
 }
