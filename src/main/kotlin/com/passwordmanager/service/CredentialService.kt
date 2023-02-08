@@ -45,15 +45,10 @@ class CredentialService/*(val credentialRepository: ICredentialRepository)*/: IC
 
     override suspend fun deleteCredential(credential: CredentialRequest): Int? {
         try {
-//            val response = withContext(Dispatchers.IO) {
-                credentialRepository.delete(credential.convert())//.block()
-//            }
-//            println("Debug deleteCredential response:\n $response")
+            credentialRepository.delete(credential.convert())
             return 0
         } catch ( e: IllegalArgumentException  ){
             logger.error { "Error deleting Credential\n Setting id was null\n $e" }
-        } catch ( e: Exception ){
-            logger.error { "Error deleting Credential\n $e" }
         }
 
         return null
@@ -68,7 +63,7 @@ class CredentialService/*(val credentialRepository: ICredentialRepository)*/: IC
         return null
     }
 
-    override suspend fun getCredentialsByUserIdEquals(userId: String): Any? {
+    override suspend fun getCredentialsByUserIdEquals(userId: String): Flux<Credential>? {
         try {
             return credentialRepository.findByUserId(userId)
         } catch (e: IllegalArgumentException){

@@ -5,20 +5,14 @@ import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import org.springframework.stereotype.Repository
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @Repository
 interface ICredentialRepository: ReactiveCrudRepository<Credential, String> {
 
-    @Query("select * from Credentials")
-    fun getCredentials()
+    fun findByUserId(userId: String): Flux<Credential>
 
     @Query("select * from Credentials where user_id = :userId")
-    fun getCredentialsByUserIdEquals(@Param("userId") id: String)
-
-    @Query("select * from Credentials where user_id = $1")
-    fun findByUserId(userId: String)
-
-    @Query("select * from Credentials u where u.user_id = :userId")
-    fun queryCredentialByUserId(userId: String)
+    fun queryCredentialByUserId()
 }

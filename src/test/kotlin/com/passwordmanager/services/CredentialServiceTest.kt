@@ -3,6 +3,7 @@ package com.passwordmanager.services
 import com.passwordmanager.common.CredentialCreateRequest
 import com.passwordmanager.common.CredentialRequest
 import com.passwordmanager.common.convert
+import com.passwordmanager.domain.Credential
 import com.passwordmanager.repository.ICredentialRepository
 import com.passwordmanager.service.CredentialService
 import kotlinx.coroutines.runBlocking
@@ -30,8 +31,8 @@ class CredentialServiceTest {
     @InjectMocks
     private lateinit var credentialService: CredentialService
 
-    private val credentialCreateRequest = CredentialCreateRequest("12345-678-90", "Test", "pass123", "www.test.com")
-    private val credentialUpdateRequest = CredentialRequest("12345-678-90", "Test", "word456", "www.test2.com", LocalDateTime.now(),"0987")
+    private val credentialCreateRequest = CredentialCreateRequest("12345-678-90", "Test", "pass123", "TestWeb","www.test.com","")
+    private val credentialUpdateRequest = CredentialRequest("12345-678-90", "Test", "word456", "TestWeb2","www.test2.com", LocalDateTime.now(),"0987")
 
 
 //    @BeforeEach
@@ -117,7 +118,7 @@ class CredentialServiceTest {
         runBlocking {
             val userId = "12345-678-90"
             `when`(credentialRepository.save(any())).then { Mono.just(credentialCreateRequest.convert()) }
-            `when`(credentialRepository.findByUserId(anyString())).then {  }
+            `when`(credentialRepository.findByUserId(anyString())).then { Flux.empty<Credential>() }
 
             credentialService.createCredential(credentialCreateRequest)
             credentialService.createCredential(credentialCreateRequest)

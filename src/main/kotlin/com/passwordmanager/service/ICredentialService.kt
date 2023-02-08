@@ -5,6 +5,7 @@ import com.passwordmanager.common.CredentialRequest
 import com.passwordmanager.domain.Credential
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
+import reactor.core.publisher.Flux
 
 @Service
 interface ICredentialService {
@@ -15,7 +16,7 @@ interface ICredentialService {
 
     suspend fun deleteCredential(credential: CredentialRequest): Int?
 
-    suspend fun getCredentialsByUserIdEquals(userId: String): Any?
+    suspend fun getCredentialsByUserIdEquals(userId: String): Flux<Credential>?
 
-    suspend fun getCredentials(): Any?
+    suspend fun getCredentials(): Flux<Credential>?
 }

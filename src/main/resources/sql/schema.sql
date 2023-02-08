@@ -1,6 +1,8 @@
 DROP TABLE IF EXISTS Users;
 DROP TABLE IF EXISTS Credentials;
 
+-- TODO: update lucid diagram
+-- TODO: Add provider to user table
 CREATE TABLE IF NOT EXISTS Users
 (
     id                  VARCHAR(60)  DEFAULT RANDOM_UUID() PRIMARY KEY,
@@ -13,6 +15,7 @@ CREATE TABLE IF NOT EXISTS Users
     date_created        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_login          TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     password_duration   INT          NOT NULL,
+    provider            VARCHAR(10)  NOT NULL,
     is_deleted          BIT          NOT NULL
     );
 
@@ -22,6 +25,7 @@ CREATE TABLE IF NOT EXISTS Credentials
     user_id             VARCHAR(60)  NOT NULL,
     username            VARCHAR(64)  NOT NULL,
     password            VARCHAR(256) NOT NULL,
+    website             VARCHAR(253) NOT NULL,
     url                 VARCHAR(253) NOT NULL,
     expiration_date     TIMESTAMP    NOT NULL,
     is_deleted          BIT          DEFAULT FALSE,

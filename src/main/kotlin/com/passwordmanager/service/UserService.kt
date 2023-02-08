@@ -29,22 +29,26 @@ class UserService(): IUserService {
             return userRepository.save( user.convert() )
         } catch ( e: IllegalArgumentException  ){
             logger.error{ "Error creating User\n User to save was null\n $e" }
-        } catch ( e: Exception ){
-            logger.error{ "Error creating User\n $e\n userRequest: $user" }
         }
 
         return null
     }
 
-    // make it patch type
-    override suspend fun modifyUser(user: UserCreateRequest): Mono<User>? {
-
+    override suspend fun modifyUser(user: UserRequest): Mono<User>? {
         try {
             return userRepository.save( user.convert() )
         } catch ( e: IllegalArgumentException  ){
             logger.error{ "Error modifying User\n User to save was null\n $e" }
-        } catch ( e: Exception ){
-            logger.error{ "Error modifying User\n $e" }
+        }
+
+        return null
+    }
+
+    override suspend fun modifyUserById(userId: String, user: UserRequest): Mono<User>? {
+        try {
+            return userRepository.save( user.addUserId(userId).convert() )
+        } catch ( e: IllegalArgumentException  ){
+            logger.error{ "Error modifying User\n User to save was null\n $e" }
         }
 
         return null
@@ -75,6 +79,24 @@ class UserService(): IUserService {
             return userRepository.findById(userId)
         } catch (e: IllegalArgumentException){
             logger.error { "Error getting User with id: $userId \n $e" }
+        }
+        return null
+    }
+    override suspend fun getUserByEmail(email: String): Mono<User>? {
+        try {
+            return userRepository.findByEmail(email)
+        } catch (e: IllegalArgumentException){
+            logger.error { "Error getting User with email: $email \n $e" }
+        }
+        return null
+    }
+
+    override suspend fun getUserId(email: String): String? {
+        try {
+            val user = userRepository.findByEmail(email).block()
+            return user!!.id
+        } catch (e: IllegalArgumentException){
+            logger.error { "Error getting UserId with email: $email \n $e" }
         }
         return null
     }

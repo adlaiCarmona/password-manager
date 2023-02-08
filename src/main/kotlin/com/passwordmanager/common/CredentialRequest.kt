@@ -7,12 +7,15 @@ data class CredentialCreateRequest(
     val userId: String?,
     val username: String,
     val password: String,
-    val url: String
+    val website: String?,
+    val url: String,
+    val tags: String?
 )
 data class CredentialRequest(
     override val userId: String,
     override val username: String,
     override val password: String,
+    override val website: String?,
     override val url: String,
     override val expirationDate: LocalDateTime?,
     override val id: String? = null,
@@ -25,6 +28,7 @@ interface ICredentialRequest{
     val userId: String?
     val username: String?
     val password: String?
+    val website: String?
     val url: String?
     val tags: String?
     val expirationDate: LocalDateTime?
@@ -37,6 +41,7 @@ fun ICredentialRequest.convert(): Credential {
         this.userId!!,
         this.username!!,
         this.password!!,
+        this.website!!,
         this.url!!,
         this.tags!!,
         this.expirationDate!!,
@@ -50,7 +55,9 @@ fun CredentialCreateRequest.convert(): Credential {
         this.userId!!,
         this.username!!,
         this.password!!,
-        this.url!!
+        this.website ?: getDomainName(this.url)!!,
+        this.url!!,
+        this.tags?: ""
     )
 }
 
@@ -59,6 +66,8 @@ fun CredentialCreateRequest.addUserId(userId: String): CredentialCreateRequest {
         userId,
         this.username,
         this.password,
-        this.url
+        this.website ?: getDomainName(this.url)!!,
+        this.url,
+        this.tags
     )
 }
