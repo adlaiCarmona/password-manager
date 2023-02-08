@@ -8,7 +8,8 @@ data class UserCreateRequest(
     val email: String,
     val password: String,
     val firstname: String,
-    val lastname: String
+    val lastname: String,
+    val provider: String = "local"
 )
 
 data class UserRequest(
@@ -17,17 +18,18 @@ data class UserRequest(
     override val firstname: String,
     override val lastname: String,
     override val id: String? = null,
-    override val settingsId: String? = null,
+//    override val settingsId: String? = null,
     override val hashedPassword: Int? = null,
     override val isDeleted: Boolean = false,
     override val dateCreated: LocalDateTime? = null,
     override val lastLogin: LocalDateTime? = null,
-    override val passwordDuration: Int?
+    override val passwordDuration: Int? = 60,
+    override val provider: String = "local"
 ) : IUserRequest
 
 interface IUserRequest{
     val id: String?
-    val settingsId: String?
+//    val settingsId: String?
     val email: String?
     val password: String?
     val hashedPassword: Int?
@@ -37,11 +39,12 @@ interface IUserRequest{
     val isDeleted: Boolean?
     val dateCreated: LocalDateTime?
     val passwordDuration: Int?
+    val provider: String?
 }
 
 fun IUserRequest.convert(): User{
     return User(
-        this.id!!,
+        this.id,
         //this.settingsId!!,
         this.email!!,
         this.password!!,
@@ -63,5 +66,20 @@ fun UserCreateRequest.convert(): User{
         this.password.hashCode(),
         this.firstname,
         this.lastname
+    )
+}
+
+fun UserRequest.addUserId(userId: String): UserRequest {
+    return UserRequest(
+        this.email,
+        this.password,
+        this.firstname,
+        this.lastname,
+        userId,
+        this.hashedPassword,
+        this.isDeleted,
+        this.dateCreated,
+        this.lastLogin,
+        this.passwordDuration
     )
 }

@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.core.annotation.Order
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -23,10 +24,17 @@ class MultiHttpSecurityConfig {
 
     @Order(1)
     @Bean
+    fun oauthFilterChain(http: HttpSecurity): SecurityFilterChain {
+        http.antMatcher("/login/**")
+            .oauth2Client(Customizer.withDefaults())
+            .httpBasic()
+
+        return http.build()
+    }
+
+    @Order(2)
+    @Bean
     fun apiFilterChain(http: HttpSecurity): SecurityFilterChain {
-        //TODO add authentication to api?
-//        http.antMatcher("/api/**").authorizeRequests { authorize -> authorize.anyRequest().hasRole("ADMIN") }
-//            .httpBasic()
         http
             .csrf().disable()
             .antMatcher("/api/**")
@@ -37,22 +45,32 @@ class MultiHttpSecurityConfig {
         return http.build()
     }
 
-    @Order(2)
-    @Bean
-    fun swaggerFilterChain(http: HttpSecurity): SecurityFilterChain {
-        //TODO add authentication to swagger?
-        http
-            .csrf().disable()
-            .antMatcher("/swagger-ui/**")
-            .authorizeRequests { authorize -> authorize.anyRequest().permitAll() }
+//    @Order(3)
+//    @Bean
+//    fun swaggerFilterChain(http: HttpSecurity): SecurityFilterChain {
+//        http
+//            .authorizeHttpRequests()
+//            //.authorizeRequests()
+//            .antMatchers("/swagger-ui/**","/v3/api-docs","/swagger-ui.html").permitAll()
+////            .antMatchers("/v3/api-docs").permitAll()
+////            .antMatchers("/swagger-ui.html").permitAll()
+//
+//        return http.build()
+//    }
 
-        return http.build()
-    }
+//    @Order(4)
+//    @Bean
+//    fun publicFilterChain(http: HttpSecurity): SecurityFilterChain {
+//        http.antMatcher("/").authorizeRequests { authorize -> authorize.anyRequest().permitAll() }
+//            .httpBasic()
+//
+//        return http.build()
+//    }
 
-    @Order(3)
+    @Order(5)
     @Bean
-    fun publicFilterChain(http: HttpSecurity): SecurityFilterChain {
-        http.antMatcher("/").authorizeRequests { authorize -> authorize.anyRequest().permitAll() }
+    fun cssFilterChain(http: HttpSecurity): SecurityFilterChain {
+        http.antMatcher("/css/**").authorizeRequests { authorize -> authorize.anyRequest().permitAll() }
             .httpBasic()
 
         return http.build()
@@ -61,15 +79,17 @@ class MultiHttpSecurityConfig {
     // Normal log in; TODO find why there is no google account now
     @Bean
     fun formLoginFilterChain(http: HttpSecurity): SecurityFilterChain {
-        http.authorizeHttpRequests { authorize -> authorize.anyRequest().authenticated() }
-            .formLogin(Customizer.withDefaults())
+        http
+            .authorizeHttpRequests().anyRequest().authenticated() //{ authorize -> authorize.anyRequest().authenticated() }
+            .and()
+            .formLogin { form ->
+                form
+                    .loginPage("/login")
+                    .defaultSuccessUrl("/overview", true)
+                    .permitAll()
+            }
 
         return http.build()
     }
 
-//    @Bean
-//    fun configure(http: HttpSecurity) {
-//        http.httpBasic().disable();
-//        http.authorizeRequests().anyRequest().authenticated();
-//    }
 }

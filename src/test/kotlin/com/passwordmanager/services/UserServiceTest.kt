@@ -38,7 +38,6 @@ class UserServiceTest {
         "Test",
         "Name",
         "id",
-        "",
         123,
         false,
         LocalDateTime.now(),
@@ -78,8 +77,8 @@ class UserServiceTest {
     @Test
     fun testUpdateUser() {
         runBlocking {
-            `when`(userRepository.save(any())).then { Mono.just(usercreateRequest.convert()) }
-            val response = userService.modifyUser(usercreateRequest)!!.block()
+            `when`(userRepository.save(any())).then { Mono.just(userRequest.convert()) }
+            val response = userService.modifyUser(userRequest)!!.block()
 
             println("Test Update User:\n response = $response")
 
@@ -91,7 +90,7 @@ class UserServiceTest {
     fun testUpdateUserInvalid() {
         runBlocking {
             doThrow(IllegalArgumentException()).`when`(userRepository).save(any())
-            val response = userService.modifyUser(usercreateRequest)
+            val response = userService.modifyUser(userRequest)
 
             println("Test Update User:\n response = $response")
 
@@ -165,6 +164,56 @@ class UserServiceTest {
         runBlocking {
             doThrow(IllegalArgumentException()).`when`(userRepository).findById(anyString())
             val response = userService.getUser("invalid")
+
+            println("Test Get User:\n getUserResponse = $response")
+
+            assert(response == null)
+        }
+    }
+
+    @Test
+    fun testGetUserByEmail() {
+        runBlocking {
+            `when`(userRepository.findByEmail(anyString())).then { Mono.just(usercreateRequest.convert()) }
+            val response = userService.getUserByEmail(userId)
+
+            println("Test Get User:\n getUserResponse = $response")
+
+            assert(response != null)
+        }
+
+    }
+
+    @Test
+    fun testGetUserByEmailInvalid() {
+        runBlocking {
+            doThrow(IllegalArgumentException()).`when`(userRepository).findByEmail(anyString())
+            val response = userService.getUserByEmail("invalid")
+
+            println("Test Get User:\n getUserResponse = $response")
+
+            assert(response == null)
+        }
+    }
+
+    @Test
+    fun testGetUserId() {
+        runBlocking {
+            `when`(userRepository.findByEmail(anyString())).then { Mono.just(userRequest.convert()) }
+            val response = userService.getUserId(userId)
+
+            println("Test Get User:\n getUserResponse = $response")
+
+            assert(response != null)
+        }
+
+    }
+
+    @Test
+    fun testGetUserIdInvalid() {
+        runBlocking {
+            doThrow(IllegalArgumentException()).`when`(userRepository).findByEmail(anyString())
+            val response = userService.getUserId("invalid")
 
             println("Test Get User:\n getUserResponse = $response")
 

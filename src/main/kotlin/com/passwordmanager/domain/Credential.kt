@@ -16,12 +16,16 @@ data class Credential(
     var username: String,
     @Column("password")
     var password: String,
+    @Column("website")
+    var website: String,
     @Column("url")
     var url: String,
     @Column("tags")
     var tags: String = "", // change this to array (table for tags)
     @Column("expiration_date")
     var expirationDate: LocalDateTime = LocalDateTime.now().plusDays(60),
+    @Column("provider")
+    var provider:String = "local",
     @Column("is_deleted")
     var isDeleted: Boolean = false
 )

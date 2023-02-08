@@ -13,9 +13,15 @@ interface IUserService {
 
     suspend fun createUser(user: UserCreateRequest): Mono<User>?
 
-    suspend fun modifyUser(user: UserCreateRequest): Mono<User>?
+    suspend fun modifyUser(user: UserRequest): Mono<User>?
+
+    suspend fun modifyUserById(userId: String, user: UserRequest): Mono<User>?
 
     suspend fun getUser(userId: String): Mono<User>?
+
+    suspend fun getUserByEmail(email: String): Mono<User>?
+
+    suspend fun getUserId(email: String): String?
 
     suspend fun deleteUser(user: UserRequest): Int?
 
