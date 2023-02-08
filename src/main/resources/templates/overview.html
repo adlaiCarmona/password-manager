@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+     <link rel="stylesheet" href="/static/css/main.css" th:href="@{/css/main.css}"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+            href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500;600&display=swap"
+            rel="stylesheet"
+    />
+    <title>Gateway</title>
+
+    <script type = "text/javascript" th:src="@{js/main.js}"></script>
+<!--  This is from: https://www.npmjs.com/package/crypto-js  -->
+    <script type = "text/javascript" th:src="@{js/aes.js}"></script>
+</head>
+<body onload="setup();fillTable();">
+<nav id="header">
+    <img th:src="@{assets/gateway-white-no-background.svg}" alt="logo" height="150%" />
+    <a href="/overview" class="navbar-item hover-underline-animation"
+    >Overview</a
+    >
+    <a href="/generator" class="navbar-item hover-underline-animation"
+    >Generator</a
+    >
+    <a href="/account" class="navbar-item hover-underline-animation"
+    >Account</a
+    >
+    <form action="">
+        <div class="search">
+            <input
+                    class="search-bar"
+                    type="text"
+                    placeholder="Search Credential"
+            />
+            <svg
+                    aria-hidden="true"
+                    class="icon-search"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 18 18"
+            >
+                <path
+                        d="m18 16.5-5.14-5.18h-.35a7 7 0 1 0-1.19 1.19v.35L16.5 18l1.5-1.5ZM12 7A5 5 0 1 1 2 7a5 5 0 0 1 10 0Z"
+                ></path>
+            </svg>
+        </div>
+        <!-- <input type="submit" value="" class="button" /> -->
+    </form>
+</nav>
+<div id="content" class="flexbox grid-content">
+    <aside id="left-panel" class="box sticky">
+        <div class="aside-title">
+            <h1 class="left-title">Filter</h1>
+        </div>
+        <div class="filter-options">
+            <div>
+                <input type="checkbox" name="website" id="website-check" />
+                <label for="website">Website</label>
+            </div>
+            <div>
+                <input type="checkbox" name="expired" id="show-expired" />
+                <label for="show-expired">Show Expired</label>
+            </div>
+            <div>
+                <input type="checkbox" name="trash" id="show-deleted" />
+                <label for="show-deleted">Show Deleted</label>
+            </div>
+        </div>
+        <button id="apply-button" class="button inverted-button" onclick="clearTable();fillTable();">Apply</button>
+    </aside>
+    <main id="center-panel" class="box">
+        <div class="center-panel-header">
+            <h1 class="main-title">Overview</h1>
+            <button id="add-button" class="button inverted-button" onclick="clearCredentialEdit()">Add</button>
+        </div>
+        <table id="credentials-table">
+            <thead>
+            <tr id="credentials-table-header">
+                <th>Website</th>
+                <th>Username</th>
+                <th>Website</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody id="credentials-table-body">
+            </tbody>
+        </table>
+    </main>
+    <aside id="right-panel" class="box sticky">
+        <div class="aside-title">
+            <h1 class="right-title" id="right-title">New Credential</h1>
+        </div>
+        <form onsubmit="saveCredential();return false;" class="credential-form" name="save-credential-form" id="saveCredentialForm">
+            <div class="credential-data" id="saveCredentialFormInputs">
+                <input class="text-input" type="text" name="username" id="username" required placeholder="Username" />
+                <input class="text-input" type="text" name="password" id="password" required placeholder="Password" />
+                <div>
+                    <input
+                            type="checkbox"
+                            name="auto-generate-password"
+                            id="auto-generate-password"
+                    />
+                    <label for="auto-generate-password">Auto-generate password</label>
+                </div>
+                <input class="text-input" type="text" name="website" id="website" required placeholder="Website Name" />
+                <input class="text-input" type="text" name="url" id="url" required placeholder="Url" />
+                <input class="text-input" type="text" name="tags" id="tags" placeholder="Tags" />
+            </div>
+            <input
+                    type="submit"
+                    value="Save Credential"
+                    class="button accent-button"
+            />
+        </form>
+    </aside>
+</div>
+<footer>
+    <div id="footer">
+        <p class="footer-title">Gateway</p>
+        <p class="flex-column-right">Copyright 2023©</p>
+    </div>
+</footer>
+<script>
+    // TODO: when getting credentials if credential is expired color be red (maybe pop up or alert?)
+    async function fillTable() {
+        const userId = getCookie("userId")
+
+        const data = await fetchJson("http://localhost:8080/api/credentials/"+userId, {
+            method: "GET",
+            headers: {
+                Accept: "application/json"
+            }
+        });
+
+        if (!data) return null;
+
+        const tableBody = document.getElementById("credentials-table-body");
+
+        const showDeleted = document.getElementById("show-deleted").checked
+        const showExpired = document.getElementById("show-expired").checked
+
+        for (let credential of data) {
+            if (credential.isDeleted)
+                if (!showDeleted)
+                    continue
+            if (new Date().toISOString() > credential.expirationDate)
+                if (!showExpired)
+                    continue
+            addCredentialToTable(credential, tableBody)
+        }
+    }
+    async function saveCredential() {
+        const formData = new FormData(saveCredentialForm);
+        const plainFormData = Object.fromEntries(formData.entries());
+        const formDataJsonString = JSON.stringify(plainFormData);
+
+        const userId = getCookie("userId")
+
+        console.log(plainFormData)
+
+        const response = await fetch("http://localhost:8080/api/credentials/"+userId, {
+            method: "POST",
+            headers: {
+                Accept: "application/json",
+                'Content-Type': "application/json"
+            },
+            body: formDataJsonString
+        });
+        const data = await response.json();
+        console.log(data)
+
+        if (!data) {
+            console.error("Error saving credential")
+            return null;
+        }
+        addCredentialToTable(data, document.getElementById("credentials-table-body"));
+    }
+    function addCredentialToTable(credential, table) {
+        const credentialProperties = ["website", "username", "url"]
+        const row = document.createElement("tr");
+
+        const today = new Date().toISOString()
+        if (today > credential.expirationDate)
+            row.className = "red"
+        if (credential.isDeleted)
+            row.className = 'strikethrough'
+
+        for (let property of credentialProperties) {
+            const info = document.createElement("td");
+            info.innerText = credential[property];
+            row.appendChild(info);
+        }
+
+        const editCell = document.createElement("td");
+        const editButtton = createEditButton(credential)
+        const deleteButtton = createDeleteButton(credential)
+
+        editCell.appendChild(editButtton)
+        editCell.appendChild(deleteButtton)
+        row.appendChild(editCell);
+
+        table.appendChild(row);
+    }
+    function createEditButton(credential) {
+        const button = document.createElement("button")
+        button.id = credential.id
+        button.innerHTML = "edit"
+        button.className = "button table-button"
+        button.onclick = function () {
+            setCredentialEdit(credential)
+        }
+        return button
+    }
+    function createDeleteButton(credential) {
+        const button = document.createElement("button")
+        button.id = credential.id
+        button.innerHTML = "delete"
+        button.className = "button inverted-button table-button"
+        button.onclick = async function () {
+            credential["isDeleted"] = true
+            console.log(credential)
+            const data = await fetchJson("http://localhost:8080/api/credentials/", {
+                method: "PATCH",
+                headers: {
+                    Accept: "application/json",
+                    'Content-Type': "application/json"
+                },
+                body: JSON.stringify(credential)
+            });
+            console.log(data)
+        }
+        return button
+    }
+    function setCredentialEdit(credential) {
+        const form = document.getElementById("saveCredentialFormInputs").childNodes
+        for (const input of form){
+            if (input.nodeName !== "INPUT")
+                continue;
+            input.value = credential[input.id]
+        }
+        setRightPanelTitle("Edit Credential")
+    }
+    function clearCredentialEdit() {
+        const form = document.getElementById("saveCredentialFormInputs").childNodes
+        for (const input of form){
+            if (input.nodeName !== "INPUT")
+                continue;
+            input.value = ""
+        }
+        setRightPanelTitle("New Credential")
+    }
+    function setRightPanelTitle(title) {
+        document.getElementById("right-title").innerHTML = title
+    }
+    function clearTable(){
+        document.getElementById("credentials-table-body").innerHTML = ""
+    }
+    function encrypt(msg, key){
+        const key = CryptoJS.enc.Utf8.parse(getSecretKey());
+        const piv = new Date().toISOString().substring(0, 16);
+        const iv = CryptoJS.enc.Utf8.parse(piv);
+        const miv = piv + userCredentials;
+        const msg = CryptoJS.enc.Utf8.parse(miv);
+
+        return CryptoJS.AES.encrypt(msg, key).toString();
+    }
+</script>
+</body>
+</html>

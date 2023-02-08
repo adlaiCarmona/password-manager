@@ -1,20 +1,54 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<html
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="https://www.thymeleaf.org"
+        xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+>
 <head>
-    <title>Login page</title>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="/static/css/main.css" th:href="@{/css/main.css}" />
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" href="/static/css/main.css" th:href="@{/css/main.css}"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link
+            href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500;600&display=swap"
+            rel="stylesheet"
+    />
+    <title>Gateway</title>
 </head>
-<body>
-<h1>Login page</h1>
-<p>Example user: user / password</p>
-<form th:action="@{/log-in}" method="post">
-    <label for="username">Username</label>:
-    <input type="text" id="username" name="username" autofocus="autofocus" /> <br />
-    <label for="password">Password</label>:
-    <input type="password" id="password" name="password" /> <br />
-    <input type="submit" value="Log in" />
-</form>
-<p><a href="/" th:href="@{/}">Back to home page</a></p>
+<body id="login-screen">
+<main id="login-panel" class="box">
+    <h1 class="main-title" style="text-align: center">Gateway</h1>
+    <form th:action="@{/login}" method="post" class="credential-form" style="gap: 1.5rem">
+        <input class="text-input" type="text" name="username" placeholder="Username" autofocus="autofocus"/>
+        <input class="text-input" type="text" name="password" placeholder="Password"/>
+        <div class="account-buttons" style="gap: 2.5rem">
+            <input
+                    type="submit"
+                    value="Signup"
+                    id="signup-button"
+                    class="button"
+            />
+            <input type="submit" value="Log in" id="login-button" class="button"/>
+        </div>
+    </form>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <div
+            id="g_id_onload"
+            data-client_id="330979130094-kr4jnpl9mg7shtg3g0i7dlh77mghj4e4.apps.googleusercontent.com"
+            data-login_uri="http://localhost:8080/login/oauth2/code/google"
+            data-auto_prompt="true"
+    ></div>
+    <div
+            class="g_id_signin"
+            data-type="standard"
+            data-size="large"
+            data-theme="outline"
+            data-text="sign_in_with"
+            data-shape="rectangular"
+            data-logo_alignment="left"
+    ></div>
+</main>
 </body>
 </html>
