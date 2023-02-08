@@ -9,7 +9,8 @@ data class CredentialCreateRequest(
     val password: String,
     val website: String?,
     val url: String,
-    val tags: String?
+    val tags: String?,
+    val expiresInDays: Int
 )
 data class CredentialRequest(
     override val userId: String,
@@ -53,11 +54,12 @@ fun CredentialCreateRequest.convert(): Credential {
     return Credential(
         null,
         this.userId!!,
-        this.username!!,
-        this.password!!,
+        this.username,
+        this.password,
         this.website ?: getDomainName(this.url)!!,
         this.url!!,
-        this.tags?: ""
+        this.tags?: "",
+        expirationDate = LocalDateTime.now().plusDays(this.expiresInDays.toLong())
     )
 }
 
@@ -68,6 +70,7 @@ fun CredentialCreateRequest.addUserId(userId: String): CredentialCreateRequest {
         this.password,
         this.website ?: getDomainName(this.url)!!,
         this.url,
-        this.tags
+        this.tags,
+        this.expiresInDays
     )
 }

@@ -53,6 +53,7 @@ fun IUserRequest.convert(): User{
         this.lastname!!,
         this.dateCreated!!,
         this.dateCreated!!,
+        this.provider!!,
         this.isDeleted!!,
         this.passwordDuration!!
     )
@@ -65,7 +66,8 @@ fun UserCreateRequest.convert(): User{
         this.password,
         this.password.hashCode(),
         this.firstname,
-        this.lastname
+        this.lastname,
+        provider=this.provider
     )
 }
 

@@ -27,6 +27,8 @@ data class User(
     var dateCreated: LocalDateTime = LocalDateTime.now(),
     @Column("last_login")
     var lastLogin: LocalDateTime = LocalDateTime.now(),
+    @Column("provider")
+    var provider:String = "local",
     @Column("is_deleted")
     var isDeleted: Boolean? = false,
     @Column("password_duration")

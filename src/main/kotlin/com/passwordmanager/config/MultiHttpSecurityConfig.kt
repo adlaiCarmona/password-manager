@@ -22,15 +22,15 @@ class MultiHttpSecurityConfig {
         return manager
     }
 
-    @Order(1)
-    @Bean
-    fun oauthFilterChain(http: HttpSecurity): SecurityFilterChain {
-        http.antMatcher("/login/**")
-            .oauth2Client(Customizer.withDefaults())
-            .httpBasic()
-
-        return http.build()
-    }
+//    @Order(1)
+//    @Bean
+//    fun oauthFilterChain(http: HttpSecurity): SecurityFilterChain {
+//        http.antMatcher("/login/**")
+//            .oauth2Client(Customizer.withDefaults())
+//            .httpBasic()
+//
+//        return http.build()
+//    }
 
     @Order(2)
     @Bean
@@ -76,18 +76,18 @@ class MultiHttpSecurityConfig {
         return http.build()
     }
 
-    // Normal log in; TODO find why there is no google account now
+    // Normal log in; TODO login with google signin button (jwt)
     @Bean
     fun formLoginFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
-            .authorizeHttpRequests().anyRequest().authenticated() //{ authorize -> authorize.anyRequest().authenticated() }
-            .and()
+            .authorizeHttpRequests{ authorize -> authorize.anyRequest().authenticated() }
             .formLogin { form ->
                 form
                     .loginPage("/login")
                     .defaultSuccessUrl("/overview", true)
                     .permitAll()
             }
+            .logout().logoutSuccessUrl("/login?logout").permitAll()
 
         return http.build()
     }

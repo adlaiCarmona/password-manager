@@ -20,13 +20,15 @@
 <body id="login-screen">
 <main id="login-panel" class="box">
     <h1 class="main-title" style="text-align: center">Gateway</h1>
-    <form th:action="@{/login}" method="post" class="credential-form" style="gap: 1.5rem">
-        <input class="text-input" type="text" name="username" placeholder="Username" autofocus="autofocus"/>
+    <form th:action="@{/signup}" method="post" class="credential-form" style="gap: 1.5rem">
+        <input class="text-input" type="text" name="email" placeholder="Email" autofocus="autofocus"/>
         <input class="text-input" type="text" name="password" placeholder="Password"/>
+        <input class="text-input" type="text" name="firstname" placeholder="Firstname" />
+        <input class="text-input" type="text" name="lastname" placeholder="Lastname"/>
         <div class="account-buttons" style="gap: 2.5rem">
             <input
-                    type="button" onclick="window.location.href='/signup';"
-                    value="Signup"
+                    type="submit"
+                    value="Sign up"
                     id="signup-button"
                     class="button"
             />

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="https://www.thymeleaf.org"
-      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+>
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -17,7 +17,7 @@
 
     <script type = "text/javascript" th:src="@{js/main.js}"></script>
 <!--  This is from: https://www.npmjs.com/package/crypto-js  -->
-    <script type = "text/javascript" th:src="@{js/aes.js}"></script>
+<!--    <script type = "text/javascript" th:src="@{js/aes.js}"></script>-->
 </head>
 <body onload="setup();fillTable();">
 <nav id="header">
@@ -111,6 +111,17 @@
                 <input class="text-input" type="text" name="website" id="website" required placeholder="Website Name" />
                 <input class="text-input" type="text" name="url" id="url" required placeholder="Url" />
                 <input class="text-input" type="text" name="tags" id="tags" placeholder="Tags" />
+                <div id="length-slider">
+                    <output>Expires In: 60 Days</output>
+                    <input type="range" name="expiresInDays" id="certification-duration" class="slider" value="60" min="1" max="360" oninput="this.previousElementSibling.value = 'Expires In: '+this.value+' Days'" />
+                    <input
+                            type="checkbox"
+                            name="default-duration-password"
+                            id="default-duration-password"
+                            checked
+                    />
+                    <label for="auto-generate-password">Use default duration</label>
+                </div>
             </div>
             <input
                     type="submit"
@@ -127,7 +138,6 @@
     </div>
 </footer>
 <script>
-    // TODO: when getting credentials if credential is expired color be red (maybe pop up or alert?)
     async function fillTable() {
         const userId = getCookie("userId")
 
@@ -158,11 +168,20 @@
     async function saveCredential() {
         const formData = new FormData(saveCredentialForm);
         const plainFormData = Object.fromEntries(formData.entries());
-        const formDataJsonString = JSON.stringify(plainFormData);
 
-        const userId = getCookie("userId")
+        const autoGeneratePassword = document.getElementById("auto-generate-password").checked
+        if (autoGeneratePassword) {
+            plainFormData["password"] = generatePass(16, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()-_=+<>?")
+        }
+
+        const useDefaultDuration = document.getElementById("default-duration-password").checked
+        if (useDefaultDuration) {
+            plainFormData["expiresInDays"] = getCookie("defaultCertsDuration")
+        }
 
         console.log(plainFormData)
+
+        const userId = getCookie("userId")
 
         const response = await fetch("http://localhost:8080/api/credentials/"+userId, {
             method: "POST",
@@ -170,7 +189,7 @@
                 Accept: "application/json",
                 'Content-Type': "application/json"
             },
-            body: formDataJsonString
+            body: JSON.stringify(plainFormData)
         });
         const data = await response.json();
         console.log(data)
@@ -261,15 +280,15 @@
     function clearTable(){
         document.getElementById("credentials-table-body").innerHTML = ""
     }
-    function encrypt(msg, key){
-        const key = CryptoJS.enc.Utf8.parse(getSecretKey());
-        const piv = new Date().toISOString().substring(0, 16);
-        const iv = CryptoJS.enc.Utf8.parse(piv);
-        const miv = piv + userCredentials;
-        const msg = CryptoJS.enc.Utf8.parse(miv);
-
-        return CryptoJS.AES.encrypt(msg, key).toString();
-    }
+    // function encrypt(msg, key){
+    //     const key = CryptoJS.enc.Utf8.parse(getSecretKey());
+    //     const piv = new Date().toISOString().substring(0, 16);
+    //     const iv = CryptoJS.enc.Utf8.parse(piv);
+    //     const miv = piv + userCredentials;
+    //     const msg = CryptoJS.enc.Utf8.parse(miv);
+    //
+    //     return CryptoJS.AES.encrypt(msg, key).toString();
+    // }
 </script>
 </body>
 </html>

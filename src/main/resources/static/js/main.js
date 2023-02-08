@@ -56,8 +56,6 @@ async function getAccount() { // used in account.html
 }
 
 async function getEmail() { // used in account.html
-    const email = getCookie("email")
-
     return await fetchText("http://localhost:8080/api/users/authenticated/name", {
         method: "GET"
     });
@@ -71,6 +69,14 @@ async function getUserId() { // used in account.html
     })
 }
 
+async function getCertDuration() { // used in account.html
+    const userId = getCookie("userId")
+
+    return await fetchText(`http://localhost:8080/api/users/${userId}/setting/password-duration`, {
+        method: "GET"
+    })
+}
+
 // TODO: encrypt this
 async function setEmailInCookies() {
     const email = await getEmail()
@@ -80,14 +86,22 @@ async function setEmailInCookies() {
 
 // TODO: encrypt this
 async function setUserIdInCookies() {
-    const userid = await getUserId()
+    const userId = await getUserId()
 
-    setCookie("userId",userid)
+    setCookie("userId",userId)
 }
+
+async function setCertDurationInCookies() {
+    const duration = await getCertDuration()
+
+    setCookie("defaultCertsDuration",duration)
+}
+
 
 async function setup(){
     await setEmailInCookies();
     await setUserIdInCookies()
+    await setCertDurationInCookies();
 }
 
 async function generatePassword() {
@@ -105,19 +119,23 @@ async function generatePassword() {
     if (formData.has("include-numbers")) characters += numbers;
     if (formData.has("include-symbols")) characters += symbols;
 
-    const charactersLength = characters.length;
-
-    if (charactersLength === 0) {
+    if (characters.length === 0) {
         console.log("Error: No type of character was selected.");
         return;
     }
 
-    // console.log(characters);
+    document.getElementById("generated-password").value = generatePass(formData.get("password-length"), characters);
+    // console.log(generatedPassword);
+}
+
+function generatePass(passwordLength, characters) {
+
+    const charactersLength = characters.length;
 
     let generatedPassword = "";
     for (
-        let i = 0, length = formData.get("password-length");
-        i < length;
+        let i = 0;
+        i < passwordLength;
         i++
     ) {
         generatedPassword += characters.charAt(
@@ -125,8 +143,7 @@ async function generatePassword() {
         );
     }
 
-    document.getElementById("generated-password").value = generatedPassword;
-    // console.log(generatedPassword);
+    return generatedPassword
 }
 
 function copyPassword(elementId) {

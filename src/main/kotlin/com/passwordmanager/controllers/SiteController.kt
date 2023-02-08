@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody
 
 @Controller
 class SiteController {
-//    @GetMapping("/")
-//    fun home(model: Model, @AuthenticationPrincipal principal: OidcUser) = "index"
 
     @GetMapping("/")
     fun index(): String {
@@ -24,6 +22,11 @@ class SiteController {
     @GetMapping("/login")
     fun login(): String {
         return "login"
+    }
+
+    @GetMapping("/signup")
+    fun signup(): String {
+        return "signup"
     }
 
     @GetMapping("/overview")
@@ -39,10 +42,10 @@ class SiteController {
     @GetMapping("/account")
     fun account() = "account"
 
-    @PostMapping("/login/oauth2/code/google")
-    fun loginGoogle(@RequestBody jwt: Jwt): String {
-        val chunks =
-
-        return "overview"
-    }
+//    @PostMapping("/login/oauth2/code/google")
+//    fun loginGoogle(@RequestBody jwt: Jwt): String {
+//        val chunks = null
+//
+//        return "overview"
+//    }
 }

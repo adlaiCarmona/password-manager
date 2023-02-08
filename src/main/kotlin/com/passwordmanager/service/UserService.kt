@@ -117,8 +117,6 @@ class UserService(): IUserService {
 
     override suspend fun getSettingPasswordDuration(userId: String): Any? {
         try {
-            println("DEBUG get Password Duration: ${userRepository.queryUserByIdEquals(userId)}")
-//            return userRepository.queryUserByIdEquals(userId)
             return userRepository.findById(userId).block()?.passwordDuration
         } catch (e: IllegalArgumentException){
             logger.error { "Error getting Setting Password Duration of User with id: $userId \n $e" }

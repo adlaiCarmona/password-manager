@@ -24,8 +24,6 @@ data class Credential(
     var tags: String = "", // change this to array (table for tags)
     @Column("expiration_date")
     var expirationDate: LocalDateTime = LocalDateTime.now().plusDays(60),
-    @Column("provider")
-    var provider:String = "local",
     @Column("is_deleted")
     var isDeleted: Boolean = false
 )
